@@ -1,0 +1,49 @@
+name: Hoka Speedgoat 7 stock monitor
+
+on:
+  schedule:
+    # Every 15 minutes (UTC). GitHub often delays scheduled runs under load,
+    # so in practice expect roughly every 15-40 minutes. That's fine here.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:   # lets you trigger a run by hand from the Actions tab
+
+permissions:
+  contents: write      # needed so the job can commit state.json back to the repo
+
+concurrency:
+  group: stock-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run stock check
+        env:
+          PRODUCT_URL:  ${{ vars.PRODUCT_URL }}
+          TARGET_COLOR: ${{ vars.TARGET_COLOR }}
+          TARGET_SIZE:  ${{ vars.TARGET_SIZE }}
+          PID:          ${{ vars.PID }}
+          COLOR_CODE:   ${{ vars.COLOR_CODE }}
+          SITE_PATH:    ${{ vars.SITE_PATH }}
+          WA_PHONE:     ${{ secrets.WA_PHONE }}
+          WA_APIKEY:    ${{ secrets.WA_APIKEY }}
+        run: python check_stock.py
+
+      - name: Persist state
+        run: |
+          if [ -n "$(git status --porcelain state.json)" ]; then
+            git config user.name  "stock-bot"
+            git config user.email "stock-bot@users.noreply.github.com"
+            git add state.json
+            git commit -m "update stock state [skip ci]"
+            git push
+          else
+            echo "No state change to commit."
+          fi
