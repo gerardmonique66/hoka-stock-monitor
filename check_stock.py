@@ -27,23 +27,24 @@ import urllib.request
 # Defaults below are pre-filled for the Men's Speedgoat 7 "Black / White" on the
 # Philippines store. Override any of them with GitHub repo Variables if needed.
 
-# Link included in the alert (the men's SG7 product page on PH).
-PRODUCT_URL = os.environ.get(
-    "PRODUCT_URL",
-    "https://www.hoka.com/en/ph/men/speedgoat-7/1171928.html?dwvar_1171928_color=BWHT",
-)
+# NOTE: we use `os.environ.get("X") or DEFAULT` (not the get(key, default) form) so
+# that a GitHub Variable that exists but is *empty* still falls back to the default.
 
-TARGET_COLOR = os.environ.get("TARGET_COLOR", "black/white")   # for HTML fallback only
-TARGET_SIZE = os.environ.get("TARGET_SIZE", "11")              # US size
+# Link included in the alert (the men's SG7 product page on PH).
+PRODUCT_URL = (os.environ.get("PRODUCT_URL") or
+    "https://www.hoka.com/en/ph/men/speedgoat-7/1171928.html?dwvar_1171928_color=BWHT")
+
+TARGET_COLOR = os.environ.get("TARGET_COLOR") or "black/white"   # for HTML fallback only
+TARGET_SIZE = os.environ.get("TARGET_SIZE") or "11"              # US size
 
 # --- JSON mode (exact per-size stock) — confirmed values for men's SG7 Black/White ---
 #   PID 1171928 = men's Speedgoat 7  (women's is 1171929)
 #   BWHT        = the Black / White colour code
 # These work against the PH catalogue even while the colour is hidden from the
 # category page, because the product record still exists.
-PID = os.environ.get("PID", "1171928").strip()
-COLOR_CODE = os.environ.get("COLOR_CODE", "BWHT").strip()
-SITE_PATH = os.environ.get("SITE_PATH", "Sites-HOKA-PH-Site/en_PH")  # PH storefront
+PID = (os.environ.get("PID") or "1171928").strip()
+COLOR_CODE = (os.environ.get("COLOR_CODE") or "BWHT").strip()
+SITE_PATH = os.environ.get("SITE_PATH") or "Sites-HOKA-PH-Site/en_PH"  # PH storefront
 
 # --- WhatsApp via CallMeBot (set as GitHub Secrets, never hard-code) ---
 WA_PHONE = os.environ.get("WA_PHONE", "")     # your number incl. country code, e.g. +639171234567
