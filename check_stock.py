@@ -59,8 +59,17 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 def http_get(url):
     req = urllib.request.Request(url, headers={
         "User-Agent": UA,
-        "Accept": "text/html,application/xhtml+xml,application/json,*/*",
+        "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
+        "X-Requested-With": "XMLHttpRequest",   # Demandware AJAX endpoints expect this
+        "Referer": "https://www.hoka.com/",
+        "Connection": "keep-alive",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "sec-ch-ua": '"Chromium";v="125", "Not.A/Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
     })
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.read().decode("utf-8", "replace")
